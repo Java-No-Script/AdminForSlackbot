@@ -200,7 +200,7 @@ export default function Dashboard() {
       <div className="p-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">대시보드</h1>
-          <p className="text-gray-600">온보딩 챗봇 관리 시스템</p>
+          <p className="text-gray-600">김과장박대리 관리 시스템</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
