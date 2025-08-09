@@ -28,7 +28,7 @@ import {
   getSlackControllerGetBotMessagesQueryKey,
   useSlackControllerDeleteMessageByParams,
   useSlackControllerGetBotMessages,
-  useSlackControllerUpdateMessage
+  useSlackControllerUpdateMessage,
 } from "@/lib/apis/chatbotAdminAPI";
 import type { BotMessagesResponse } from "@/lib/apis/model";
 import { useQueryClient } from "@tanstack/react-query";
@@ -57,7 +57,7 @@ export default function MessagesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [editingMessage, setEditingMessage] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
-  
+
   const queryClient = useQueryClient();
   const queryParams = { channelId: "C099M8GTU4S" };
   const queryKey = getSlackControllerGetBotMessagesQueryKey(queryParams);
@@ -83,20 +83,20 @@ export default function MessagesPage() {
         // Optimistic update
         queryClient.setQueryData(queryKey, (old: any) => {
           if (!old?.data?.messages) return old;
-          
+
           const oldData = old.data as BotMessagesResponse;
-          const updatedMessages = oldData.messages.map((msg: any) => 
-            msg.ts === variables.data.timestamp 
+          const updatedMessages = oldData.messages.map((msg: any) =>
+            msg.ts === variables.data.timestamp
               ? { ...msg, text: variables.data.text }
               : msg
           );
-          
+
           return {
             ...old,
             data: {
               ...oldData,
-              messages: updatedMessages
-            }
+              messages: updatedMessages,
+            },
           };
         });
 
@@ -131,12 +131,12 @@ export default function MessagesPage() {
         // Optimistic update - 메시지 삭제
         queryClient.setQueryData(queryKey, (old: any) => {
           if (!old?.data?.messages) return old;
-          
+
           const oldData = old.data as BotMessagesResponse;
           const filteredMessages = oldData.messages.filter(
             (msg: any) => msg.ts !== variables.timestamp
           );
-          
+
           return {
             ...old,
             data: {
@@ -144,9 +144,12 @@ export default function MessagesPage() {
               messages: filteredMessages,
               stats: {
                 ...oldData.stats,
-                totalMessages: Math.max(0, ((oldData.stats as any)?.totalMessages || 0) - 1)
-              }
-            }
+                totalMessages: Math.max(
+                  0,
+                  ((oldData.stats as any)?.totalMessages || 0) - 1
+                ),
+              },
+            },
           };
         });
 
@@ -166,9 +169,9 @@ export default function MessagesPage() {
     },
   });
 
-  
   const apiResponse = messagesResponse?.data as BotMessagesResponse | undefined;
-  const messages: SlackMessage[] = (apiResponse?.messages || []) as unknown as SlackMessage[];
+  const messages: SlackMessage[] = (apiResponse?.messages ||
+    []) as unknown as SlackMessage[];
 
   // 테스트용 토스트 - 페이지 로드 시 토스트가 작동하는지 확인
   useEffect(() => {
@@ -269,7 +272,9 @@ export default function MessagesPage() {
       <Layout>
         <div className="p-6">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">챗봇 메시지 관리</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              챗봇 메시지 관리
+            </h1>
             <p className="text-gray-600">
               슬랙 챗봇이 주고받은 메시지를 관리합니다
             </p>
@@ -291,10 +296,10 @@ export default function MessagesPage() {
       <Layout>
         <div className="p-6">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">챗봇 메시지 관리</h1>
-            <p className="text-gray-600">
-              슬랙 챗봇이 주고받은 메시지를 관리합니다
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              챗봇 메시지 관리
+            </h1>
+            <p className="text-gray-600">챗봇이 주고받은 메시지를 관리합니다</p>
           </div>
           <Card>
             <CardContent className="p-8">
@@ -302,8 +307,8 @@ export default function MessagesPage() {
                 <div className="text-lg text-red-600">
                   메시지를 불러오는 중 오류가 발생했습니다.
                 </div>
-                <Button 
-                  onClick={() => queryClient.invalidateQueries({ queryKey })} 
+                <Button
+                  onClick={() => queryClient.invalidateQueries({ queryKey })}
                   variant="outline"
                 >
                   다시 시도
@@ -329,9 +334,7 @@ export default function MessagesPage() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>
-                메시지 목록 ({filteredMessages.length}개)
-              </CardTitle>
+              <CardTitle>메시지 목록 ({filteredMessages.length}개)</CardTitle>
               <div className="flex space-x-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -371,7 +374,8 @@ export default function MessagesPage() {
                 ) : (
                   currentMessages.map((message: SlackMessage) => {
                     const isEditing = editingMessage === message.ts;
-                    const canEdit = !message.bot_id || message.user === "U099G5CQAQK"; // 봇 메시지는 특정 사용자만 편집 가능
+                    const canEdit =
+                      !message.bot_id || message.user === "U099G5CQAQK"; // 봇 메시지는 특정 사용자만 편집 가능
 
                     return (
                       <TableRow key={message.ts}>
@@ -392,7 +396,9 @@ export default function MessagesPage() {
                                   className="h-8"
                                 >
                                   <Check className="h-3 w-3 mr-1" />
-                                  {updateMessageMutation.isPending ? "저장 중..." : "저장"}
+                                  {updateMessageMutation.isPending
+                                    ? "저장 중..."
+                                    : "저장"}
                                 </Button>
                                 <Button
                                   variant="outline"
@@ -424,7 +430,9 @@ export default function MessagesPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(message.permalink, "_blank")}
+                              onClick={() =>
+                                window.open(message.permalink, "_blank")
+                              }
                               title="슬랙에서 보기"
                             >
                               <ExternalLink className="h-4 w-4" />
@@ -446,7 +454,10 @@ export default function MessagesPage() {
                                 size="sm"
                                 onClick={() => handleDelete(message)}
                                 title="삭제"
-                                disabled={deleteMessageMutation.isPending || editingMessage !== null}
+                                disabled={
+                                  deleteMessageMutation.isPending ||
+                                  editingMessage !== null
+                                }
                                 className="text-red-600 hover:text-red-700"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -468,7 +479,9 @@ export default function MessagesPage() {
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious
-                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                        onClick={() =>
+                          handlePageChange(Math.max(1, currentPage - 1))
+                        }
                         className={
                           currentPage === 1
                             ? "pointer-events-none opacity-50"
@@ -478,44 +491,50 @@ export default function MessagesPage() {
                     </PaginationItem>
 
                     {/* 페이지 번호 표시 */}
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                      // 현재 페이지 주변만 표시하는 로직
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 2 && page <= currentPage + 2)
-                      ) {
-                        return (
-                          <PaginationItem key={page}>
-                            <PaginationLink
-                              onClick={() => handlePageChange(page)}
-                              isActive={currentPage === page}
-                              className="cursor-pointer"
-                            >
-                              {page}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
-                      }
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => {
+                        // 현재 페이지 주변만 표시하는 로직
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 2 && page <= currentPage + 2)
+                        ) {
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => handlePageChange(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        }
 
-                      // 생략 표시
-                      if (
-                        page === currentPage - 3 ||
-                        page === currentPage + 3
-                      ) {
-                        return (
-                          <PaginationItem key={page}>
-                            <PaginationEllipsis />
-                          </PaginationItem>
-                        );
-                      }
+                        // 생략 표시
+                        if (
+                          page === currentPage - 3 ||
+                          page === currentPage + 3
+                        ) {
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
 
-                      return null;
-                    })}
+                        return null;
+                      }
+                    )}
 
                     <PaginationItem>
                       <PaginationNext
-                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                        onClick={() =>
+                          handlePageChange(
+                            Math.min(totalPages, currentPage + 1)
+                          )
+                        }
                         className={
                           currentPage === totalPages
                             ? "pointer-events-none opacity-50"
@@ -528,8 +547,9 @@ export default function MessagesPage() {
 
                 {/* 페이지 정보 표시 */}
                 <div className="text-sm text-gray-600 text-center mt-4">
-                  {startIndex + 1}-{Math.min(endIndex, filteredMessages.length)} of{" "}
-                  {filteredMessages.length} 메시지 (페이지 {currentPage} / {totalPages})
+                  {startIndex + 1}-{Math.min(endIndex, filteredMessages.length)}{" "}
+                  of {filteredMessages.length} 메시지 (페이지 {currentPage} /{" "}
+                  {totalPages})
                 </div>
               </div>
             )}
