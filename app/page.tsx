@@ -23,6 +23,8 @@ import {
 import { useSlackControllerGetBotStats } from "@/lib/apis/chatbotAdminAPI";
 import env from "@/constants/env";
 import { Skeleton } from "@/components/ui/skeleton";
+import DashboardCard from "./components/DashboardCard";
+import SkeletonDashboardCard from "./components/SkeletonDashboardCard";
 
 interface Channel {
   id: string;
@@ -225,26 +227,19 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {stats.map((stat) => (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </CardTitle>
-                <stat.icon className="h-4 w-4 text-gray-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-green-600 mt-1">
-                  {isLoading ? (
-                    <Skeleton className="w-30 h-4" />
-                  ) : (
-                    stat.change + " 지난 달 대비"
-                  )}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <SkeletonDashboardCard key={index} />
+              ))
+            : stats.map((stat) => (
+                <DashboardCard
+                  key={stat.title}
+                  title={stat.title}
+                  value={stat.value}
+                  change={stat.change}
+                  icon={<stat.icon className="h-4 w-4 text-gray-400" />}
+                />
+              ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
