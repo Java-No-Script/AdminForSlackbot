@@ -181,9 +181,10 @@ export default function MessagesPage() {
       },
     },
   });
-    
 
+  
   const messages: SlackMessage[] = (messagesResponse?.data?.messages || []) as unknown as SlackMessage[];
+  
 
   // 검색 필터링
   const filteredMessages = useMemo(() => {
