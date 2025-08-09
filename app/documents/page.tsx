@@ -69,7 +69,7 @@ export default function DocumentsPage() {
       category: "프로세스",
       size: "0.5 MB",
       uploadDate: "2025-01-07",
-      status: "processing",
+      status: "processed",
     },
   ]);
 
