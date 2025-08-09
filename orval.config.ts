@@ -5,7 +5,7 @@ const BASE_URL =
 
 export default defineConfig({
   adminApi: {
-    input: "http://43.201.67.242:5000/api",
+    input: "http://43.201.67.242:5000/openapi.json",
     output: {
       mode: "split",
       target: "./lib/apis",

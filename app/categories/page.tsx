@@ -9,7 +9,10 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Edit, Trash2 } from "lucide-react"
+import { Plus, Edit, Trash2, Loader2 } from "lucide-react"
+import { CategoryPieChart } from "@/components/charts/category-pie-chart"
+import { useThreadControllerGetCategoryStats } from "@/lib/apis/chatbotAdminAPI"
+import type { ThreadCategoryStatsDto } from "@/lib/apis/model"
 
 interface Category {
   id: string
@@ -19,30 +22,35 @@ interface Category {
   color: string
 }
 
+const CATEGORY_LABELS = {
+  technical: "기술",
+  question: "질문",
+  discussion: "토론",
+  announcement: "공지사항",
+  other: "기타",
+} as const
+
+const CATEGORY_COLORS = {
+  technical: "blue",
+  question: "green", 
+  discussion: "purple",
+  announcement: "orange",
+  other: "red",
+} as const
+
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([
-    {
-      id: "1",
-      name: "개발",
-      description: "개발 관련 문서 및 가이드",
-      documentCount: 25,
-      color: "blue",
-    },
-    {
-      id: "2",
-      name: "인사",
-      description: "인사 정책 및 복리후생",
-      documentCount: 12,
-      color: "green",
-    },
-    {
-      id: "3",
-      name: "프로세스",
-      description: "업무 프로세스 및 절차",
-      documentCount: 18,
-      color: "purple",
-    },
-  ])
+  const { data: categoryStatsResponse, isLoading, error } = useThreadControllerGetCategoryStats()
+  
+  // API 데이터를 기존 Category 형태로 변환
+  const categories: Category[] = categoryStatsResponse?.data?.map((stat: ThreadCategoryStatsDto) => ({
+    id: stat.category,
+    name: CATEGORY_LABELS[stat.category],
+    description: `${stat.category} 관련 스레드`,
+    documentCount: stat.count,
+    color: CATEGORY_COLORS[stat.category],
+  })) || []
+
+  const [staticCategories, setStaticCategories] = useState<Category[]>([])
 
   const [newCategory, setNewCategory] = useState({
     name: "",
@@ -59,13 +67,41 @@ export default function CategoriesPage() {
         documentCount: 0,
         color: newCategory.color,
       }
-      setCategories([...categories, category])
+      setStaticCategories([...staticCategories, category])
       setNewCategory({ name: "", description: "", color: "blue" })
     }
   }
 
   const handleDeleteCategory = (id: string) => {
-    setCategories(categories.filter((cat) => cat.id !== id))
+    setStaticCategories(staticCategories.filter((cat) => cat.id !== id))
+  }
+
+  // API 데이터와 정적 데이터 결합
+  const allCategories = [...categories, ...staticCategories]
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="p-6">
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span className="ml-2">카테고리 데이터를 불러오는 중...</span>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="p-6">
+          <div className="text-center text-red-600">
+            카테고리 데이터를 불러오는데 실패했습니다.
+          </div>
+        </div>
+      </Layout>
+    )
   }
 
   return (
@@ -116,8 +152,13 @@ export default function CategoriesPage() {
           </div>
         </div>
 
+        {/* Chart Section */}
+        <div className="mb-8">
+          <CategoryPieChart data={allCategories} />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
+          {allCategories.map((category) => (
             <Card key={category.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">

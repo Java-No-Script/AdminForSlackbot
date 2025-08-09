@@ -6,7 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type SlackControllerGetBotStatsParams = {
-channelId: string;
-days: string;
+export type ThreadControllerGetOverviewStats200CategoryCounts = {
+  technical?: number;
+  question?: number;
+  discussion?: number;
+  announcement?: number;
+  other?: number;
 };

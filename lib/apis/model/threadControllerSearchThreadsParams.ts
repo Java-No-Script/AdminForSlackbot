@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type SlackControllerGetBotStatsParams = {
-channelId: string;
-days: string;
+export type ThreadControllerSearchThreadsParams = {
+q: string;
+limit: number;
 };
