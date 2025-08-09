@@ -33,6 +33,14 @@ interface Channel {
   lastActivity: string;
 }
 
+interface BotStats {
+  categoryCounts: number;
+  docCount: number;
+  stats: {
+    totalMessages: number;
+  };
+}
+
 export default function Dashboard() {
   const [channels, setChannels] = useState<Channel[]>([
     {
@@ -87,35 +95,37 @@ export default function Dashboard() {
     days: "7",
   });
 
-  console.log(botStats);
+  const dataStats = botStats?.data as unknown as BotStats;
+
+  console.log(dataStats.stats.totalMessages);
 
   const stats = [
     {
       title: "총 메시지",
-      value: "1,234",
+      value: dataStats.stats.totalMessages,
       icon: MessageSquare,
       change: "+12%",
       changeType: "positive" as const,
     },
     {
       title: "문서 수",
-      value: "89",
+      value: dataStats.docCount,
       icon: FileText,
       change: "+5%",
       changeType: "positive" as const,
     },
     {
       title: "카테고리",
-      value: "12",
+      value: dataStats.categoryCounts,
       icon: FolderOpen,
       change: "+2",
       changeType: "positive" as const,
     },
     {
       title: "이번 달 질문",
-      value: "456",
+      value: dataStats.stats.totalMessages,
       icon: TrendingUp,
-      change: "+23%",
+      change: "+100%",
       changeType: "positive" as const,
     },
   ];
