@@ -358,7 +358,6 @@ export default function MessagesPage() {
                 <TableRow>
                   <TableHead>내용</TableHead>
                   <TableHead>사용자</TableHead>
-                  <TableHead>유형</TableHead>
                   <TableHead>시간</TableHead>
                   <TableHead>작업</TableHead>
                 </TableRow>
@@ -415,16 +414,13 @@ export default function MessagesPage() {
                             </div>
                           ) : (
                             <div className="truncate" title={message.text}>
-                              {message.text}
+                              {"답변이 준비되었습니다.".startsWith(message.text)
+                                ? message.blocks?.[0].text.text
+                                : message.text}
                             </div>
                           )}
                         </TableCell>
                         <TableCell>{message.user}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">
-                            {getMessageType(message)}
-                          </Badge>
-                        </TableCell>
                         <TableCell>{formatDate(message.created_at)}</TableCell>
                         <TableCell>
                           <div className="flex space-x-2">

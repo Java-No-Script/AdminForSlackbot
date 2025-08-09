@@ -1,29 +1,48 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Layout } from "@/components/layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Upload, FileText, Trash2, Download, Search } from "lucide-react"
+import { useState } from "react";
+import { Layout } from "@/components/layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Upload, FileText, Trash2, Download, Search } from "lucide-react";
 
 interface Document {
-  id: string
-  name: string
-  type: string
-  category: string
-  size: string
-  uploadDate: string
-  status: "processed" | "processing" | "error"
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  size: string;
+  uploadDate: string;
+  status: "processed" | "processing" | "error";
 }
 
 export default function DocumentsPage() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
   const [documents] = useState<Document[]>([
     {
       id: "1",
@@ -52,22 +71,24 @@ export default function DocumentsPage() {
       uploadDate: "2025-01-07",
       status: "processing",
     },
-  ])
+  ]);
 
-  const filteredDocuments = documents.filter((doc) => doc.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredDocuments = documents.filter((doc) =>
+    doc.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "processed":
-        return <Badge className="bg-green-100 text-green-800">처리완료</Badge>
+        return <Badge className="bg-green-100 text-green-800">처리완료</Badge>;
       case "processing":
-        return <Badge className="bg-yellow-100 text-yellow-800">처리중</Badge>
+        return <Badge className="bg-yellow-100 text-yellow-800">처리중</Badge>;
       case "error":
-        return <Badge className="bg-red-100 text-red-800">오류</Badge>
+        return <Badge className="bg-red-100 text-red-800">오류</Badge>;
       default:
-        return <Badge variant="secondary">알 수 없음</Badge>
+        return <Badge variant="secondary">알 수 없음</Badge>;
     }
-  }
+  };
 
   return (
     <Layout>
@@ -76,7 +97,9 @@ export default function DocumentsPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">문서 관리</h1>
-              <p className="text-gray-600">챗봇이 학습할 문서를 업로드하고 관리합니다</p>
+              <p className="text-gray-600">
+                챗봇이 학습할 문서를 업로드하고 관리합니다
+              </p>
             </div>
             <Dialog>
               <DialogTrigger asChild>
@@ -93,7 +116,9 @@ export default function DocumentsPage() {
                   <div>
                     <Label htmlFor="file">파일 선택</Label>
                     <Input id="file" type="file" accept=".md,.txt,.pdf" />
-                    <p className="text-xs text-gray-500 mt-1">지원 형식: Markdown (.md), Text (.txt), PDF (.pdf)</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      지원 형식: Markdown (.md), Text (.txt), PDF (.pdf)
+                    </p>
                   </div>
                   <div>
                     <Label htmlFor="category">카테고리</Label>
@@ -146,7 +171,7 @@ export default function DocumentsPage() {
               <TableBody>
                 {filteredDocuments.map((doc) => (
                   <TableRow key={doc.id}>
-                    <TableCell className="flex items-center space-x-2">
+                    <TableCell className="flex items-center space-x-2 leading-[33px]">
                       <FileText className="h-4 w-4 text-gray-400" />
                       <span>{doc.name}</span>
                     </TableCell>
@@ -177,5 +202,5 @@ export default function DocumentsPage() {
         </Card>
       </div>
     </Layout>
-  )
+  );
 }
