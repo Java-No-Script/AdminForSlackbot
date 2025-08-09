@@ -211,9 +211,6 @@ export default function SettingsPage() {
                         })
                       }
                     />
-                    <Button variant="outline" size="sm">
-                      테스트
-                    </Button>
                   </div>
                 </div>
                 <div>
@@ -231,9 +228,6 @@ export default function SettingsPage() {
                         })
                       }
                     />
-                    <Button variant="outline" size="sm">
-                      테스트
-                    </Button>
                   </div>
                 </div>
                 <div>
