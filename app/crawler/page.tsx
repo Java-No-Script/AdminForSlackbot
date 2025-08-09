@@ -21,24 +21,75 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Play, ExternalLink, Clock, Database } from "lucide-react";
+import { Play, ExternalLink, Clock, Database, Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useCrawlingControllerGetCrawledThreads } from "@/lib/apis/chatbotAdminAPI";
-import type { CrawlingControllerGetCrawledThreads200HistoryItem } from "@/lib/apis/model";
+import { 
+  useCrawlingControllerGetCrawledThreads,
+  useCrawlingControllerCrawlWebsiteWithEmbedding 
+} from "@/lib/apis/chatbotAdminAPI";
+import type { 
+  CrawlingControllerGetCrawledThreads200HistoryItem,
+  UniversalCrawlRequest 
+} from "@/lib/apis/model";
+import { useToast } from "@/hooks/use-toast";
 
 const ITEMS_PER_PAGE = 10;
 
 export default function CrawlerPage() {
   const [startUrl, setStartUrl] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [maxPages, setMaxPages] = useState(10);
+  const { toast } = useToast();
 
   // Fetch crawled threads data
-  const { data: crawledData, isLoading, error } = useCrawlingControllerGetCrawledThreads();
+  const { 
+    data: crawledData, 
+    isLoading, 
+    error,
+    refetch: refetchCrawledThreads 
+  } = useCrawlingControllerGetCrawledThreads();
+
+  // Crawling mutation
+  const crawlMutation = useCrawlingControllerCrawlWebsiteWithEmbedding({
+    mutation: {
+      onSuccess: (data) => {
+        toast({
+          title: "크롤링 완료",
+          description: "웹사이트 크롤링이 성공적으로 완료되었습니다.",
+        });
+        // Refetch the crawled threads to show the new data
+        refetchCrawledThreads();
+      },
+      onError: (error) => {
+        console.error('크롤링 실패:', error);
+        toast({
+          variant: "destructive",
+          title: "크롤링 실패",
+          description: "웹사이트 크롤링 중 오류가 발생했습니다.",
+        });
+      },
+    },
+  });
 
   const handleStartCrawling = () => {
-    // TODO: 크롤링 로직 구현
-    console.log("크롤링 시작:", startUrl);
+    if (!startUrl) {
+      toast({
+        variant: "destructive",
+        title: "URL 입력 필요",
+        description: "크롤링할 URL을 입력해주세요.",
+      });
+      return;
+    }
+
+    const requestData: UniversalCrawlRequest = {
+      url: startUrl,
+      maxPages,
+    };
+
+    crawlMutation.mutate({ data: requestData });
   };
+
+  const isCrawling = crawlMutation.isPending;
 
   // Calculate pagination
   const totalItems = crawledData?.data?.total || 0;
@@ -92,16 +143,54 @@ export default function CrawlerPage() {
                   placeholder="https://example.com"
                   value={startUrl}
                   onChange={(e) => setStartUrl(e.target.value)}
+                  disabled={isCrawling}
                 />
+              </div>
+              <div>
+                <Label htmlFor="maxPages">최대 페이지 수</Label>
+                <Input
+                  className="mt-2"
+                  id="maxPages"
+                  type="number"
+                  min="1"
+                  max="150"
+                  placeholder="10"
+                  value={maxPages}
+                  onChange={(e) => setMaxPages(Number(e.target.value) || 10)}
+                  disabled={isCrawling}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  웹사이트 크롤링 시 수집할 최대 페이지 수 (1-150)
+                </p>
               </div>
               <Button 
                 className="w-full" 
                 onClick={handleStartCrawling}
-                disabled={!startUrl}
+                disabled={!startUrl || isCrawling}
               >
-                <Play className="h-4 w-4 mr-2" />
-                수집 시작
+                {isCrawling ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    수집 중...
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    수집 시작
+                  </>
+                )}
               </Button>
+              {isCrawling && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm font-medium">크롤링 진행 중</span>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-1">
+                    {startUrl}에서 데이터를 수집하고 있습니다...
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
