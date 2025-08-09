@@ -23,17 +23,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "@/hooks/use-toast";
+
 import {
   getSlackControllerGetBotMessagesQueryKey,
   useSlackControllerDeleteMessageByParams,
   useSlackControllerGetBotMessages,
   useSlackControllerUpdateMessage
 } from "@/lib/apis/chatbotAdminAPI";
+import type { BotMessagesResponse } from "@/lib/apis/model";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, Edit, ExternalLink, Search, Trash2, X } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface SlackMessage {
   ts: string;
@@ -58,7 +59,6 @@ export default function MessagesPage() {
   const [editText, setEditText] = useState("");
   
   const queryClient = useQueryClient();
-  const { toast } = useToast();
   const queryParams = { channelId: "C099M8GTU4S" };
   const queryKey = getSlackControllerGetBotMessagesQueryKey(queryParams);
 
@@ -84,7 +84,8 @@ export default function MessagesPage() {
         queryClient.setQueryData(queryKey, (old: any) => {
           if (!old?.data?.messages) return old;
           
-          const updatedMessages = old.data.messages.map((msg: SlackMessage) => 
+          const oldData = old.data as BotMessagesResponse;
+          const updatedMessages = oldData.messages.map((msg: any) => 
             msg.ts === variables.data.timestamp 
               ? { ...msg, text: variables.data.text }
               : msg
@@ -93,7 +94,7 @@ export default function MessagesPage() {
           return {
             ...old,
             data: {
-              ...old.data,
+              ...oldData,
               messages: updatedMessages
             }
           };
@@ -106,10 +107,6 @@ export default function MessagesPage() {
         setEditText("");
         // 서버에서 최신 데이터를 가져와 캐시 업데이트
         queryClient.invalidateQueries({ queryKey });
-        toast({
-          title: "메시지 업데이트 완료",
-          description: "메시지가 성공적으로 업데이트되었습니다.",
-        });
       },
       onError: (error, variables, context) => {
         // 에러 발생 시 이전 데이터로 롤백
@@ -117,11 +114,6 @@ export default function MessagesPage() {
           queryClient.setQueryData(queryKey, context.previousData);
         }
         console.error("메시지 업데이트 실패:", error);
-        toast({
-          title: "업데이트 실패",
-          description: "메시지 업데이트에 실패했습니다. 다시 시도해주세요.",
-          variant: "destructive",
-        });
       },
     },
   });
@@ -140,18 +132,19 @@ export default function MessagesPage() {
         queryClient.setQueryData(queryKey, (old: any) => {
           if (!old?.data?.messages) return old;
           
-          const filteredMessages = old.data.messages.filter(
-            (msg: SlackMessage) => msg.ts !== variables.timestamp
+          const oldData = old.data as BotMessagesResponse;
+          const filteredMessages = oldData.messages.filter(
+            (msg: any) => msg.ts !== variables.timestamp
           );
           
           return {
             ...old,
             data: {
-              ...old.data,
+              ...oldData,
               messages: filteredMessages,
               stats: {
-                ...old.data.stats,
-                totalMessages: Math.max(0, (old.data.stats?.totalMessages || 0) - 1)
+                ...oldData.stats,
+                totalMessages: Math.max(0, ((oldData.stats as any)?.totalMessages || 0) - 1)
               }
             }
           };
@@ -162,10 +155,6 @@ export default function MessagesPage() {
       onSuccess: () => {
         // 서버에서 최신 데이터를 가져와 캐시 업데이트
         queryClient.invalidateQueries({ queryKey });
-        toast({
-          title: "메시지 삭제 완료",
-          description: "메시지가 성공적으로 삭제되었습니다.",
-        });
       },
       onError: (error, variables, context) => {
         // 에러 발생 시 이전 데이터로 롤백
@@ -173,18 +162,18 @@ export default function MessagesPage() {
           queryClient.setQueryData(queryKey, context.previousData);
         }
         console.error("메시지 삭제 실패:", error);
-        toast({
-          title: "삭제 실패",
-          description: "메시지 삭제에 실패했습니다. 다시 시도해주세요.",
-          variant: "destructive",
-        });
       },
     },
   });
 
   
-  const messages: SlackMessage[] = (messagesResponse?.data?.messages || []) as unknown as SlackMessage[];
-  
+  const apiResponse = messagesResponse?.data as BotMessagesResponse | undefined;
+  const messages: SlackMessage[] = (apiResponse?.messages || []) as unknown as SlackMessage[];
+
+  // 테스트용 토스트 - 페이지 로드 시 토스트가 작동하는지 확인
+  useEffect(() => {
+    console.log("Messages page loaded, testing toast...");
+  }, []);
 
   // 검색 필터링
   const filteredMessages = useMemo(() => {
@@ -251,7 +240,7 @@ export default function MessagesPage() {
   // 편집 저장 핸들러
   const handleEditSave = (message: SlackMessage) => {
     if (editText.trim() === "") {
-      alert("메시지 내용을 입력해주세요.");
+      toast.error("메시지 내용을 입력해주세요.");
       return;
     }
 
@@ -267,6 +256,7 @@ export default function MessagesPage() {
   // 메시지 삭제 핸들러
   const handleDelete = (message: SlackMessage) => {
     if (confirm("정말로 이 메시지를 삭제하시겠습니까?")) {
+      toast.info("메시지를 삭제하는 중...");
       deleteMessageMutation.mutate({
         channelId: message.channel,
         timestamp: message.ts,
@@ -546,7 +536,6 @@ export default function MessagesPage() {
           </CardContent>
         </Card>
       </div>
-      <Toaster />
     </Layout>
   );
 }

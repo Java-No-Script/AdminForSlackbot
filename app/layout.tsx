@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { pretendard } from "@/styles/fonts/pretendard";
 import { QueryProvider } from "@/components/query-provider";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "온보딩 챗봇 어드민",
@@ -19,6 +20,13 @@ export default function RootLayout({
     <html lang="ko" className={`${pretendard.className}`}>
       <body>
         <QueryProvider>{children}</QueryProvider>
+        <Toaster 
+          richColors 
+          position="top-right"
+          expand={false}
+          visibleToasts={5}
+          duration={4000}
+        />
       </body>
     </html>
   );
