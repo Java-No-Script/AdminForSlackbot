@@ -16,7 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={`${pretendard.className}`}>
+    <html
+      lang="ko"
+      className={`${pretendard.className}`}
+      suppressHydrationWarning
+    >
       <body>
         <QueryProvider>{children}</QueryProvider>
         <Toaster
