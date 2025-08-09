@@ -2,6 +2,7 @@ import type React from "react";
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { pretendard } from "@/styles/fonts/pretendard";
+import { QueryProvider } from "@/components/query-provider";
 
 export const metadata: Metadata = {
   title: "온보딩 챗봇 어드민",
@@ -16,7 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={`${pretendard.className}`}>
-      <body className="font-sans">{children}</body>
+      <body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }

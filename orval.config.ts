@@ -5,8 +5,7 @@ const BASE_URL =
 
 export default defineConfig({
   adminApi: {
-    // yaml 파일명 추가 후 수정 필요
-    input: "./test.yaml",
+    input: "http://43.201.67.242:5000/api",
     output: {
       mode: "split",
       target: "./lib/apis",

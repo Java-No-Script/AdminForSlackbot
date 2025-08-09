@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Layout } from "@/components/layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { AlertModal } from "@/components/modals/alert-modal"
-import { ConfirmModal } from "@/components/modals/confirm-modal"
-import { ChannelRegistrationModal } from "@/components/modals/channel-registration-modal"
+import { useState } from "react";
+import { Layout } from "@/components/layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AlertModal } from "@/components/modals/alert-modal";
+import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { ChannelRegistrationModal } from "@/components/modals/channel-registration-modal";
 import {
   MessageSquare,
   FileText,
@@ -19,16 +19,18 @@ import {
   Lock,
   Settings,
   Trash2,
-} from "lucide-react"
+} from "lucide-react";
+import { useSlackControllerGetBotStats } from "@/lib/apis/chatbotAdminAPI";
+import env from "@/constants/env";
 
 interface Channel {
-  id: string
-  name: string
-  type: "public" | "private" | "dm"
-  description: string
-  isActive: boolean
-  messageCount: number
-  lastActivity: string
+  id: string;
+  name: string;
+  type: "public" | "private" | "dm";
+  description: string;
+  isActive: boolean;
+  messageCount: number;
+  lastActivity: string;
 }
 
 export default function Dashboard() {
@@ -60,7 +62,7 @@ export default function Dashboard() {
       messageCount: 89,
       lastActivity: "1일 전",
     },
-  ])
+  ]);
 
   // 모달 상태 관리
   const [alertModal, setAlertModal] = useState({
@@ -68,7 +70,7 @@ export default function Dashboard() {
     title: "",
     message: "",
     type: "info" as "success" | "error" | "warning" | "info",
-  })
+  });
 
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
@@ -76,9 +78,12 @@ export default function Dashboard() {
     message: "",
     onConfirm: () => {},
     variant: "default" as "default" | "destructive",
-  })
+  });
 
-  const [channelModal, setChannelModal] = useState(false)
+  const [channelModal, setChannelModal] = useState(false);
+  const { data: botStats } = useSlackControllerGetBotStats({
+    channelId: env.NEXT_PUBLIC_API_CHANNEL_ID,
+  });
 
   const stats = [
     {
@@ -109,7 +114,7 @@ export default function Dashboard() {
       change: "+23%",
       changeType: "positive" as const,
     },
-  ]
+  ];
 
   const handleChannelRegistration = (channelData: any) => {
     const newChannel: Channel = {
@@ -120,16 +125,16 @@ export default function Dashboard() {
       isActive: channelData.isActive,
       messageCount: 0,
       lastActivity: "방금 전",
-    }
+    };
 
-    setChannels([...channels, newChannel])
+    setChannels([...channels, newChannel]);
     setAlertModal({
       isOpen: true,
       title: "채널 등록 완료",
       message: `${channelData.name} 채널이 성공적으로 등록되었습니다.`,
       type: "success",
-    })
-  }
+    });
+  };
 
   const handleDeleteChannel = (channelId: string, channelName: string) => {
     setConfirmModal({
@@ -138,49 +143,53 @@ export default function Dashboard() {
       message: `정말로 "${channelName}" 채널을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`,
       variant: "destructive",
       onConfirm: () => {
-        setChannels(channels.filter((channel) => channel.id !== channelId))
+        setChannels(channels.filter((channel) => channel.id !== channelId));
         setAlertModal({
           isOpen: true,
           title: "채널 삭제 완료",
           message: `${channelName} 채널이 삭제되었습니다.`,
           type: "success",
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   const toggleChannelStatus = (channelId: string) => {
-    const channel = channels.find((c) => c.id === channelId)
-    if (!channel) return
+    const channel = channels.find((c) => c.id === channelId);
+    if (!channel) return;
 
-    const action = channel.isActive ? "비활성화" : "활성화"
+    const action = channel.isActive ? "비활성화" : "활성화";
     setConfirmModal({
       isOpen: true,
       title: `채널 ${action}`,
       message: `"${channel.name}" 채널을 ${action}하시겠습니까?`,
       variant: "default",
       onConfirm: () => {
-        setChannels(channels.map((c) => (c.id === channelId ? { ...c, isActive: !c.isActive } : c)))
+        setChannels(
+          channels.map((c) =>
+            c.id === channelId ? { ...c, isActive: !c.isActive } : c
+          )
+        );
         setAlertModal({
           isOpen: true,
           title: `채널 ${action} 완료`,
           message: `${channel.name} 채널이 ${action}되었습니다.`,
           type: "success",
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   const getChannelIcon = (type: string) => {
     switch (type) {
       case "private":
-        return <Lock className="h-4 w-4" />
+        return <Lock className="h-4 w-4" />;
       case "dm":
-        return <Users className="h-4 w-4" />
+        return <Users className="h-4 w-4" />;
       default:
-        return <Hash className="h-4 w-4" />
+        return <Hash className="h-4 w-4" />;
     }
-  }
+  };
 
   return (
     <Layout>
@@ -194,12 +203,16 @@ export default function Dashboard() {
           {stats.map((stat) => (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">{stat.title}</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  {stat.title}
+                </CardTitle>
                 <stat.icon className="h-4 w-4 text-gray-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-green-600 mt-1">{stat.change} 지난 달 대비</p>
+                <p className="text-xs text-green-600 mt-1">
+                  {stat.change} 지난 달 대비
+                </p>
               </CardContent>
             </Card>
           ))}
@@ -215,21 +228,27 @@ export default function Dashboard() {
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">새로운 문서가 업로드되었습니다</p>
+                    <p className="text-sm font-medium">
+                      새로운 문서가 업로드되었습니다
+                    </p>
                     <p className="text-xs text-gray-500">2시간 전</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">카테고리가 수정되었습니다</p>
+                    <p className="text-sm font-medium">
+                      카테고리가 수정되었습니다
+                    </p>
                     <p className="text-xs text-gray-500">4시간 전</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">챗봇 메시지가 삭제되었습니다</p>
+                    <p className="text-sm font-medium">
+                      챗봇 메시지가 삭제되었습니다
+                    </p>
                     <p className="text-xs text-gray-500">6시간 전</p>
                   </div>
                 </div>
@@ -245,19 +264,27 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm">개발 환경 설정 방법</span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">45회</span>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    45회
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">코드 리뷰 프로세스</span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">32회</span>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    32회
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">배포 절차</span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">28회</span>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    28회
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">회사 규정</span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">21회</span>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    21회
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -278,7 +305,10 @@ export default function Dashboard() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {channels.map((channel) => (
-                <div key={channel.id} className="border rounded-lg p-4 space-y-3">
+                <div
+                  key={channel.id}
+                  className="border rounded-lg p-4 space-y-3"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       {getChannelIcon(channel.type)}
@@ -303,7 +333,13 @@ export default function Dashboard() {
                       <Settings className="h-3 w-3 mr-1" />
                       {channel.isActive ? "비활성화" : "활성화"}
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDeleteChannel(channel.id, channel.name)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        handleDeleteChannel(channel.id, channel.name)
+                      }
+                    >
                       <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
@@ -338,5 +374,5 @@ export default function Dashboard() {
         />
       </div>
     </Layout>
-  )
+  );
 }

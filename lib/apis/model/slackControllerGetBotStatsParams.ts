@@ -7,6 +7,6 @@
  */
 
 export type SlackControllerGetBotStatsParams = {
-channelId: string;
-days: string;
+  channelId: string;
+  days?: string;
 };
