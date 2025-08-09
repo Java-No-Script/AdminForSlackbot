@@ -83,7 +83,11 @@ export default function Dashboard() {
   const [channelModal, setChannelModal] = useState(false);
   const { data: botStats } = useSlackControllerGetBotStats({
     channelId: env.NEXT_PUBLIC_API_CHANNEL_ID,
+    // NOTES: days가 필수로 필요하기 때문에 7일로 설정
+    days: "7",
   });
+
+  console.log(botStats);
 
   const stats = [
     {
