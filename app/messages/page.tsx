@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import env from "@/constants/env";
 
 import {
   getSlackControllerGetBotMessagesQueryKey,
@@ -59,7 +60,7 @@ export default function MessagesPage() {
   const [editText, setEditText] = useState("");
 
   const queryClient = useQueryClient();
-  const queryParams = { channelId: "C099M8GTU4S" };
+  const queryParams = { channelId: env.NEXT_PUBLIC_API_CHANNEL_ID };
   const queryKey = getSlackControllerGetBotMessagesQueryKey(queryParams);
 
   // API로 슬랙 메시지 가져오기
