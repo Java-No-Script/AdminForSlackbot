@@ -11,4 +11,16 @@ export type SlackControllerGetBotMessagesParams = {
  * Slack channel ID
  */
 channelId?: string;
+/**
+ * Include thread messages (default: true)
+ */
+includeThreads?: string;
+/**
+ * Page number (default: 1)
+ */
+page?: string;
+/**
+ * Messages per page (default: 20, max: 100)
+ */
+limit?: string;
 };

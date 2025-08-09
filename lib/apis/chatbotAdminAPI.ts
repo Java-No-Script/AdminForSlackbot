@@ -790,7 +790,7 @@ export function useCrawlingControllerGetCrawledThreads<TData = Awaited<ReturnTyp
 
 
 /**
- * @summary Get all bot messages from Slack channels
+ * @summary Get all bot messages from Slack channels with pagination
  */
 export const slackControllerGetBotMessages = (
     params?: SlackControllerGetBotMessagesParams,
@@ -858,7 +858,7 @@ export function useSlackControllerGetBotMessages<TData = Awaited<ReturnType<type
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get all bot messages from Slack channels
+ * @summary Get all bot messages from Slack channels with pagination
  */
 
 export function useSlackControllerGetBotMessages<TData = Awaited<ReturnType<typeof slackControllerGetBotMessages>>, TError = unknown>(

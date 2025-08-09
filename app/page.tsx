@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useSlackControllerGetBotStats } from "@/lib/apis/chatbotAdminAPI";
 import env from "@/constants/env";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Channel {
   id: string;
@@ -89,7 +90,7 @@ export default function Dashboard() {
   });
 
   const [channelModal, setChannelModal] = useState(false);
-  const { data: botStats } = useSlackControllerGetBotStats({
+  const { data: botStats, isLoading } = useSlackControllerGetBotStats({
     channelId: env.NEXT_PUBLIC_API_CHANNEL_ID,
     // NOTES: days가 필수로 필요하기 때문에 7일로 설정
     days: "7",
@@ -97,33 +98,43 @@ export default function Dashboard() {
 
   const dataStats = botStats?.data as unknown as BotStats;
 
-  console.log(dataStats.stats.totalMessages);
-
   const stats = [
     {
       title: "총 메시지",
-      value: dataStats.stats.totalMessages,
+      value: isLoading ? (
+        <Skeleton className="w-20 h-6" />
+      ) : (
+        dataStats.stats.totalMessages
+      ),
       icon: MessageSquare,
       change: "+12%",
       changeType: "positive" as const,
     },
     {
       title: "문서 수",
-      value: dataStats.docCount,
+      value: isLoading ? <Skeleton className="w-20 h-6" /> : dataStats.docCount,
       icon: FileText,
       change: "+5%",
       changeType: "positive" as const,
     },
     {
       title: "카테고리",
-      value: dataStats.categoryCounts,
+      value: isLoading ? (
+        <Skeleton className="w-20 h-6" />
+      ) : (
+        dataStats.categoryCounts
+      ),
       icon: FolderOpen,
       change: "+2",
       changeType: "positive" as const,
     },
     {
       title: "이번 달 질문",
-      value: dataStats.stats.totalMessages,
+      value: isLoading ? (
+        <Skeleton className="w-20 h-6" />
+      ) : (
+        dataStats.stats.totalMessages
+      ),
       icon: TrendingUp,
       change: "+100%",
       changeType: "positive" as const,
@@ -225,7 +236,11 @@ export default function Dashboard() {
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
                 <p className="text-xs text-green-600 mt-1">
-                  {stat.change} 지난 달 대비
+                  {isLoading ? (
+                    <Skeleton className="w-30 h-4" />
+                  ) : (
+                    stat.change + " 지난 달 대비"
+                  )}
                 </p>
               </CardContent>
             </Card>
