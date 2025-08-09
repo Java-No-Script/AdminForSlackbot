@@ -11,16 +11,4 @@ export type SlackControllerGetBotMessagesParams = {
  * Slack channel ID
  */
 channelId?: string;
-/**
- * Number of messages to retrieve
- */
-limit?: string;
-/**
- * Oldest message timestamp
- */
-oldest?: string;
-/**
- * Latest message timestamp
- */
-latest?: string;
 };

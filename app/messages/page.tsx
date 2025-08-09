@@ -1,20 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -24,17 +14,26 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Search, Edit, Trash2, Eye, ExternalLink, Check, X } from "lucide-react";
-import { 
-  useSlackControllerGetBotMessages,
-  useSlackControllerUpdateMessage,
-  useSlackControllerDeleteMessageByParams,
-  getSlackControllerGetBotMessagesQueryKey
-} from "@/lib/apis/chatbotAdminAPI";
-import type { BotMessagesResponse } from "@/lib/apis/model";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import {
+  getSlackControllerGetBotMessagesQueryKey,
+  useSlackControllerDeleteMessageByParams,
+  useSlackControllerGetBotMessages,
+  useSlackControllerUpdateMessage
+} from "@/lib/apis/chatbotAdminAPI";
+import { useQueryClient } from "@tanstack/react-query";
+import { Check, Edit, ExternalLink, Search, Trash2, X } from "lucide-react";
+import React, { useMemo, useState } from "react";
 
 interface SlackMessage {
   ts: string;

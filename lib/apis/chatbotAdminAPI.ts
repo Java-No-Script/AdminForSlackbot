@@ -27,7 +27,6 @@ import type {
 import type {
   AdvancedCrawlResult,
   AppControllerGetOpenApiJson200,
-  BotMessagesResponse,
   CrawlRequest,
   CrawlResult,
   DeleteMessageRequest,
@@ -702,7 +701,7 @@ export function useCrawlingControllerGetCrawlResults<TData = Awaited<ReturnType<
 
 
 /**
- * @summary Get bot messages from Slack channels
+ * @summary Get all bot messages from Slack channels
  */
 export const slackControllerGetBotMessages = (
     params?: SlackControllerGetBotMessagesParams,
@@ -710,7 +709,7 @@ export const slackControllerGetBotMessages = (
 ) => {
       
       
-      return customInstance<BotMessagesResponse>(
+      return customInstance<null>(
       {url: `http://ec2-43-201-67-242.ap-northeast-2.compute.amazonaws.com:5000/slack/messages`, method: 'GET',
         params, signal
     },
@@ -770,7 +769,7 @@ export function useSlackControllerGetBotMessages<TData = Awaited<ReturnType<type
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get bot messages from Slack channels
+ * @summary Get all bot messages from Slack channels
  */
 
 export function useSlackControllerGetBotMessages<TData = Awaited<ReturnType<typeof slackControllerGetBotMessages>>, TError = unknown>(
