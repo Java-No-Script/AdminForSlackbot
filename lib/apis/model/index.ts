@@ -14,6 +14,8 @@ export * from './botMessagesResponseMessagesItem';
 export * from './botMessagesResponseStats';
 export * from './crawlRequest';
 export * from './crawlResult';
+export * from './crawlingControllerGetCrawledThreads200';
+export * from './crawlingControllerGetCrawledThreads200HistoryItem';
 export * from './deleteMessageRequest';
 export * from './messageActionResponse';
 export * from './searchRequest';

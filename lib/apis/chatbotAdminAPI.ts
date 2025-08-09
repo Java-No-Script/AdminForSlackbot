@@ -29,6 +29,7 @@ import type {
   AppControllerGetOpenApiJson200,
   CrawlRequest,
   CrawlResult,
+  CrawlingControllerGetCrawledThreads200,
   DeleteMessageRequest,
   MessageActionResponse,
   SearchRequest,
@@ -689,6 +690,94 @@ export function useCrawlingControllerGetCrawlResults<TData = Awaited<ReturnType<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getCrawlingControllerGetCrawlResultsQueryOptions(jobId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Get crawled thread groups
+ */
+export const crawlingControllerGetCrawledThreads = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<CrawlingControllerGetCrawledThreads200>(
+      {url: `http://ec2-43-201-67-242.ap-northeast-2.compute.amazonaws.com:5000/crawling/history`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getCrawlingControllerGetCrawledThreadsQueryKey = () => {
+    return [`http://ec2-43-201-67-242.ap-northeast-2.compute.amazonaws.com:5000/crawling/history`] as const;
+    }
+
+    
+export const getCrawlingControllerGetCrawledThreadsQueryOptions = <TData = Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCrawlingControllerGetCrawledThreadsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>> = ({ signal }) => crawlingControllerGetCrawledThreads(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CrawlingControllerGetCrawledThreadsQueryResult = NonNullable<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>>
+export type CrawlingControllerGetCrawledThreadsQueryError = unknown
+
+
+export function useCrawlingControllerGetCrawledThreads<TData = Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>,
+          TError,
+          Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCrawlingControllerGetCrawledThreads<TData = Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>,
+          TError,
+          Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCrawlingControllerGetCrawledThreads<TData = Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get crawled thread groups
+ */
+
+export function useCrawlingControllerGetCrawledThreads<TData = Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof crawlingControllerGetCrawledThreads>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCrawlingControllerGetCrawledThreadsQueryOptions(options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
